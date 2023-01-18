@@ -7,9 +7,9 @@ SIZE = 30
 
 class Apple:
     def __init__(self, surface):
-        self.image = pygame.image.load("resource/apple.png").convert()
+        self.image = pygame.image.load("resources/apple.jpg").convert()
         self.parent_screen = surface
-        self.x, self.y = SIZE*3
+        self.x, self.y = SIZE*3, SIZE*3
 
     def draw(self):
         self.parent_screen.blit(self.image, (self.x, self.y))
@@ -81,7 +81,11 @@ class Game:
         # draw the snake
         self.snake.draw()
         # put the apple and draw it
-        self.apple = Apple()
+        self.apple = Apple(self.surface)
+        self.apple.draw()
+
+    def play(self):
+        self.snake.walk()  # snake will keeping moving on and on, without press key
         self.apple.draw()
 
     def run(self):
@@ -107,7 +111,8 @@ class Game:
                 elif event.type == QUIT:
                     running = False
 
-            self.snake.walk()  # snake will keeping moving on and on, without press key
+            self.play()
+
             time.sleep(0.3)
 
 
