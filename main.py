@@ -103,10 +103,18 @@ class Game:
     def play(self):
         self.snake.walk()  # snake will keeping moving on and on, without press key
         self.apple.draw()
+        self.display_score()
+        pygame.display.update()
 
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.snake.increase_lenght()
             self.apple.move()
+
+    def display_score(self):
+        font = pygame.font.SysFont('arial', 25)
+        score = font.render(
+            f"Score: {self.snake.length}", True, (0, 0, 0))
+        self.surface.blit(score, (400, 10))
 
     def run(self):
         running = True
