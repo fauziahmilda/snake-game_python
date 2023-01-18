@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *  # import certain global variable
+import time
 
 
 class Snake:
@@ -8,6 +9,7 @@ class Snake:
         # method loading the image, block or snake
         self.block = pygame.image.load("resources/block.jpg").convert()
         self.x, self.y = 100, 100
+        self.direction = 'down'
 
     def draw(self):
         self.parent_screen.fill((110, 110, 5))  # clear the screen
@@ -15,19 +17,36 @@ class Snake:
         pygame.display.update()
 
     def move_up(self):
-        self.y -= 10
-        self.draw()
+        self.direction = 'up'
+        # self.y -= 10
+        # self.draw()
 
     def move_down(self):
-        self.y += 10
-        self.draw()
+        self.direction = 'down'
+        # self.y += 10
+        # self.draw()
 
     def move_left(self):
-        self.x -= 10
-        self.draw()
+        self.direction = 'left'
+        # self.x -= 10
+        # self.draw()
 
     def move_right(self):
-        self.x += 10
+        self.direction = 'right'
+        # self.x += 10
+        # self.draw()
+
+    def walk(self):
+        # drawing the snake based on current direction
+        if self.direction == 'up':
+            self.y -= 10
+        if self.direction == 'down':
+            self.y += 10
+        if self.direction == 'left':
+            self.x -= 10
+        if self.direction == 'right':
+            self.x += 10
+
         self.draw()
 
 
@@ -66,7 +85,8 @@ class Game:
                 elif event.type == QUIT:
                     running = False
 
-        pass
+            self.snake.walk()  # snake will keeping moving on and on, without press key
+            time.sleep(0.2)
 
 
 # main routine in python
