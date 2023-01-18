@@ -2,18 +2,33 @@ import pygame
 from pygame.locals import *  # import certain global variable
 import time
 
+SIZE = 30
+
+
+class Apple:
+    def __init__(self, surface):
+        self.image = pygame.image.load("resource/apple.png").convert()
+        self.parent_screen = surface
+        self.x, self.y = SIZE*3
+
+    def draw(self):
+        self.parent_screen.blit(self.image, (self.x, self.y))
+        pygame.display.flip()
+
 
 class Snake:
-    def __init__(self, parent_screen):
-        self.parent_screen = parent_screen
+    def __init__(self, surface, length):
+        self.length = length
+        self.parent_screen = surface
         # method loading the image, block or snake
-        self.block = pygame.image.load("resources/block.jpg").convert()
-        self.x, self.y = 100, 100
+        self.block = pygame.image.load("resources/block2.jpg").convert()
+        self.x, self.y = [SIZE]*length, [SIZE]*length
         self.direction = 'down'
 
     def draw(self):
-        self.parent_screen.fill((110, 110, 5))  # clear the screen
-        self.parent_screen.blit(self.block, (self.x, self.y))
+        self.parent_screen.fill((174, 153, 148))  # clear the screen
+        for i in range(self.length):  # to add snake body
+            self.parent_screen.blit(self.block, (self.x[i], self.y[i]))
         pygame.display.update()
 
     def move_up(self):
@@ -37,15 +52,20 @@ class Snake:
         # self.draw()
 
     def walk(self):
+
+        for i in range(self.length - 1, 0, -1):
+            self.x[i] = self.x[i-1]
+            self.y[i] = self.y[i-1]
+
         # drawing the snake based on current direction
         if self.direction == 'up':
-            self.y -= 10
+            self.y[0] -= SIZE
         if self.direction == 'down':
-            self.y += 10
+            self.y[0] += SIZE
         if self.direction == 'left':
-            self.x -= 10
+            self.x[0] -= SIZE
         if self.direction == 'right':
-            self.x += 10
+            self.x[0] += SIZE
 
         self.draw()
 
@@ -56,11 +76,13 @@ class Game:
 
         # initialize a window on screen for display
         self.surface = pygame.display.set_mode((500, 500))  # background
-        self.surface.fill((255, 255, 255))
         # put the screen
-        self.snake = Snake(self.surface)
+        self.snake = Snake(self.surface, 6)
         # draw the snake
         self.snake.draw()
+        # put the apple and draw it
+        self.apple = Apple()
+        self.apple.draw()
 
     def run(self):
         running = True
@@ -86,7 +108,7 @@ class Game:
                     running = False
 
             self.snake.walk()  # snake will keeping moving on and on, without press key
-            time.sleep(0.2)
+            time.sleep(0.3)
 
 
 # main routine in python
