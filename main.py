@@ -4,6 +4,7 @@ import time
 import random
 
 SIZE = 30
+BACKGROUND_COLOR = (174, 153, 148)
 
 
 class Apple:
@@ -17,8 +18,8 @@ class Apple:
         pygame.display.flip()
 
     def move(self):
-        self.x = random.randint(0, 15)*SIZE
-        self.y = random.randint(0, 15)*SIZE
+        self.x = random.randint(1, 14)*SIZE
+        self.y = random.randint(1, 14)*SIZE
 
 
 class Snake:
@@ -31,7 +32,7 @@ class Snake:
         self.direction = 'down'
 
     def draw(self):
-        self.parent_screen.fill((174, 153, 148))  # clear the screen
+        self.parent_screen.fill(BACKGROUND_COLOR)  # clear the screen
         for i in range(self.length):  # to add snake body
             self.parent_screen.blit(self.block, (self.x[i], self.y[i]))
         pygame.display.update()
@@ -106,9 +107,15 @@ class Game:
         self.display_score()
         pygame.display.update()
 
+        # snake colliding with apple
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.snake.increase_lenght()
             self.apple.move()
+
+        # snake colliding with it self
+        for i in range(3, self.snake.length):
+            if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
+                raise "Game Over"
 
     def display_score(self):
         font = pygame.font.SysFont('arial', 25)
@@ -116,32 +123,60 @@ class Game:
             f"Score: {self.snake.length}", True, (0, 0, 0))
         self.surface.blit(score, (400, 10))
 
+    def show_game_over(self):
+        self.surface.fill(BACKGROUND_COLOR)
+        font = pygame.font.SysFont('arial', 20)
+        line1 = font.render(
+            f"Game is Over ! Your score is {self.snake.length}", True, (0, 0, 0))
+        self.surface.blit(line1, (80, 150))
+        line2 = font.render(
+            f"To play again press Enter. To exit press Escape!", True, (0, 0, 0))
+        self.surface.blit(line2, (70, 200))
+        pygame.display.flip()
+
+    def reset(self):
+        self.snake = Snake(self.surface, 1)
+        self.apple = Apple(self.surface)
+
     def run(self):
         running = True
+        pause = False
+
         while running:
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         running = False
 
-                    if event.key == K_UP:
-                        self.snake.move_up()
+                    if event.key == K_RETURN:
+                        pause = False
 
-                    if event.key == K_DOWN:
-                        self.snake.move_down()
+                    if not pause:
+                        if event.key == K_UP:
+                            self.snake.move_up()
 
-                    if event.key == K_RIGHT:
-                        self.snake.move_right()
+                        if event.key == K_DOWN:
+                            self.snake.move_down()
 
-                    if event.key == K_LEFT:
-                        self.snake.move_left()
+                        if event.key == K_RIGHT:
+                            self.snake.move_right()
+
+                        if event.key == K_LEFT:
+                            self.snake.move_left()
 
                 elif event.type == QUIT:
                     running = False
 
-            self.play()
+            try:
+                if not pause:
+                    self.play()
 
-            time.sleep(0.3)
+            except Exception as e:
+                self.show_game_over()
+                pause = True
+                self.reset()
+
+            time.sleep(.25)
 
 
 # main routine in python
