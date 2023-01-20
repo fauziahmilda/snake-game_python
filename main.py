@@ -84,7 +84,8 @@ class Snake:
 class Game:
     def __init__(self):
         pygame.init()  # initiate pygame
-
+        # play bg music
+        self.play_background_music()
         # initialize a window on screen for display
         self.surface = pygame.display.set_mode((500, 500))  # background
         # put the screen
@@ -94,12 +95,22 @@ class Game:
         # put the apple and draw it
         self.apple = Apple(self.surface)
         self.apple.draw()
+        # initialize to put music by mixer: sound mode
+        pygame.mixer.init()
 
     def is_collision(self, x1, y1, x2, y2):
         if x1 >= x2 and x1 <= x2 + SIZE:
             if y1 >= y2 and y1 <= y2 + SIZE:
                 return True
         return False
+
+    def play_background_music(self):
+        pygame.mixer.music.load("resources/bg.mp3")
+        pygame.mixer.music.play()
+
+    def play_sound(self, sound):
+        sound = pygame.mixer.Sound(f"resources/{sound}.mp3")
+        pygame.mixer.Sound.play(sound)
 
     def play(self):
         self.snake.walk()  # snake will keeping moving on and on, without press key
@@ -109,12 +120,15 @@ class Game:
 
         # snake colliding with apple
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
+            # play music
+            self.play_sound("ding")
             self.snake.increase_lenght()
             self.apple.move()
 
         # snake colliding with it self
         for i in range(3, self.snake.length):
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
+                self.play_sound("crash")
                 raise "Game Over"
 
     def display_score(self):
