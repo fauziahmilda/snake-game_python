@@ -131,6 +131,11 @@ class Game:
                 self.play_sound("crash")
                 raise "Game Over"
 
+        # snake colliding with the border
+        if not (0 <= self.snake.x[0] <= 500 and 0 <= self.snake.y[0] <= 500):
+            self.play_sound("crash")
+            raise "Hit the boundary, ERROR"
+
     def display_score(self):
         font = pygame.font.SysFont('arial', 25)
         score = font.render(
@@ -147,6 +152,7 @@ class Game:
             f"To play again press Enter. To exit press Escape!", True, (0, 0, 0))
         self.surface.blit(line2, (70, 200))
         pygame.display.flip()
+        pygame.mixer.music.pause()
 
     def reset(self):
         self.snake = Snake(self.surface, 1)
@@ -164,6 +170,7 @@ class Game:
 
                     if event.key == K_RETURN:
                         pause = False
+                        pygame.mixer.music.unpause()
 
                     if not pause:
                         if event.key == K_UP:
